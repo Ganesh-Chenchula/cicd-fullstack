@@ -60,7 +60,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://cicd-fullstack-frontend.onrender.com"
+    "https://cicd-fullstack-frontend.onrender.com",
 ]
 
 
