@@ -9,55 +9,59 @@ export default function App() {
   const [status, setStatus] = useState("Checking API...");
   const [error, setError] = useState("");
 
-  
-useEffect(() => {
-  const controller = new AbortController();
+  useEffect(() => {
+    const controller = new AbortController();
 
-  async function checkBackend() {
-    try {
-      const response = await fetch(
-        `${API_URL}/api/health/`,
-        { signal: controller.signal }
-      );
+    async function checkBackend() {
+      try {
+        const response = await fetch(`${API_URL}/api/health/`, {
+          signal: controller.signal,
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        setStatus(data.message || "Django API is running");
+        setError("");
+      } catch (err) {
+        if (err.name === "AbortError") {
+          return;
+        }
+
+        setStatus("API unavailable");
+        setError(
+          "Unable to connect to Django. Check that the backend is running and the API URL is correct."
+        );
       }
-
-      const data = await response.json();
-      setStatus(data.message);
-      setError("");
-    } catch (err) {
-      if (err.name === "AbortError") return;
-
-      setStatus("API unavailable");
-      setError(
-        "Unable to connect to Django. Check that the backend is running and the API URL is correct."
-      );
     }
-  }
 
-  checkBackend();
+    checkBackend();
 
-  return () => controller.abort();
-}, []);
-
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   return (
     <main className="dashboard">
       <p className="eyebrow">DEVOPS TRAINING PROJECT</p>
+
       <h1>My First CI/CD Pipeline</h1>
+
       <p>React frontend connected to a Django REST API.</p>
 
       <section className="status-card">
         <h2>Backend status</h2>
+
         <p role="status">{status}</p>
+
         {error && <p role="alert">{error}</p>}
       </section>
 
-      <p className="footer">
-        Build • Test • Deploy
-      </p>
+      <p className="footer">Build • Test • Deploy</p>
     </main>
   );
 }
