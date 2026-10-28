@@ -1,0 +1,56 @@
+
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #172033;
+  background: #f3f6fb;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.dashboard {
+  width: min(720px, 92%);
+  margin: 12vh auto;
+}
+
+.eyebrow {
+  color: #5365db;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  margin: 12px 0;
+}
+
+.dashboard > p {
+  line-height: 1.7;
+}
+
+.status-card {
+  margin-top: 32px;
+  padding: 28px;
+  border: 1px solid #dce3ef;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 12px 40px #15264a0d;
+}
+
+.status-card p {
+  font-weight: 600;
+}
+
+.footer {
+  color: #64748b;
+  margin-top: 28px;
+}
