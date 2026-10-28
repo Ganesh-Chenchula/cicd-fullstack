@@ -46,7 +46,7 @@ useEffect(() => {
   return (
     <main className="dashboard">
       <p className="eyebrow">DEVOPS TRAINING PROJECT</p>
-      <h1>CI/CD Dashboard</h1>
+      <h1>My First CI/CD Pipeline</h1>
       <p>React frontend connected to a Django REST API.</p>
 
       <section className="status-card">

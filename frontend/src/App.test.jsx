@@ -9,11 +9,11 @@ import "@testing-library/jest-dom/vitest";
 import App from "./App";
 
 describe("CI/CD dashboard", () => {
-  it("renders the dashboard heading", () => {
+  it("renders the updated dashboard heading", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { name: "CI/CD Dashboard" })
+      screen.getByRole("heading", {name: "My First CI/CD Pipeline",})
     ).toBeInTheDocument();
   });
 });
