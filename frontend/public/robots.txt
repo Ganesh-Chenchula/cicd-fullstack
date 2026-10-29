@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cicd-fullstack-frontend.onrender.com/sitemap.xml
