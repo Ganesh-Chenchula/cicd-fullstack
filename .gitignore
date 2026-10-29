@@ -1,4 +1,23 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+frontend/.env
+backend/.env
+
+# Python
 __pycache__/
 *.py[cod]
 .venv/
 venv/
+
+# Frontend
+node_modules/
+dist/
+
+# Local database
+*.sqlite3
+db.sqlite3
+
+# Local logs
+*.log

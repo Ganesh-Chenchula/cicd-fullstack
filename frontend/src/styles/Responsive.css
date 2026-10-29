@@ -1,0 +1,274 @@
+.sidebar-close-mobile {
+  display: none;
+}
+
+@media (min-width: 1500px) {
+  .sidebar {
+    flex-basis: 365px;
+  }
+
+  .chat-app {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .message-list {
+    padding-left: clamp(40px, 5vw, 100px);
+    padding-right: clamp(40px, 5vw, 100px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .chat-app {
+    padding: 9px;
+    gap: 9px;
+  }
+
+  .sidebar {
+    flex-basis: 290px;
+    min-width: 250px;
+  }
+
+  .chat-header {
+    padding: 13px 17px;
+  }
+
+  .message-content-column {
+    max-width: 82%;
+  }
+}
+
+@media (max-width: 760px) {
+  .auth-page {
+    display: flex;
+    min-height: 100dvh;
+  }
+
+  .auth-showcase {
+    display: none;
+  }
+
+  .auth-form-side {
+    width: 100%;
+    min-height: 100dvh;
+    padding: 28px 23px;
+  }
+
+  .auth-mobile-logo {
+    display: grid;
+    margin-bottom: 25px;
+    color: white;
+  }
+
+  .auth-card h2 {
+    font-size: 30px;
+  }
+
+  .chat-app {
+    position: relative;
+    display: flex;
+    height: 100dvh;
+    min-height: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    width: min(345px, 88vw);
+    min-width: 0;
+    height: 100dvh;
+    border-radius: 0 19px 19px 0;
+    transform: translateX(-105%);
+    transition: transform .25s ease;
+    box-shadow: none;
+  }
+
+  .sidebar.sidebar-mobile-open {
+    transform: translateX(0);
+    box-shadow: var(--shadow);
+  }
+
+  .mobile-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 29;
+    border: 0;
+    background: rgba(12, 14, 28, .45);
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-close-mobile {
+    display: inline-grid;
+    margin-left: auto;
+  }
+
+  .chat-main {
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 53px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+
+  .mobile-topbar strong {
+    font-size: 15px;
+    font-weight: 850;
+    letter-spacing: -.4px;
+  }
+
+  .chat-header {
+    min-height: 69px;
+    padding: 10px 12px;
+    gap: 9px;
+  }
+
+  .mobile-back-button {
+    display: inline-grid;
+  }
+
+  .header-avatar {
+    width: 39px;
+    height: 39px;
+    flex-basis: 39px;
+    border-radius: 13px;
+  }
+
+  .chat-header-info h2 {
+    font-size: 13px;
+  }
+
+  .chat-header-info p {
+    font-size: 10px;
+  }
+
+  .chat-header-actions {
+    gap: 0;
+  }
+
+  .chat-header-actions .icon-button {
+    width: 32px;
+    height: 34px;
+  }
+
+  .optional-action {
+    display: none;
+  }
+
+  .chat-context {
+    min-height: 29px;
+    padding: 0 13px;
+    font-size: 9px;
+  }
+
+  .message-list {
+    padding: 11px 12px 16px;
+  }
+
+  .message-content-column {
+    max-width: 86%;
+  }
+
+  .message-bubble {
+    padding: 9px 11px 6px;
+    border-radius: 13px;
+  }
+
+  .message-text {
+    font-size: 13px;
+  }
+
+  .message-actions {
+    gap: 0;
+  }
+
+  .message-actions button {
+    width: 27px;
+    height: 27px;
+  }
+
+  .composer-area {
+    padding: 9px 10px max(9px, env(safe-area-inset-bottom));
+  }
+
+  .message-composer {
+    min-height: 49px;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 14px;
+  }
+
+  .message-composer textarea {
+    font-size: 16px;
+  }
+
+  .composer-tools .icon-button {
+    width: 33px;
+    height: 35px;
+  }
+
+  .send-button {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+  }
+
+  .composer-hint {
+    display: none;
+  }
+
+  .welcome-panel {
+    padding: 22px;
+  }
+
+  .welcome-panel h1 {
+    font-size: 28px;
+  }
+
+  .message-row {
+    margin-bottom: 8px;
+  }
+
+  .date-separator {
+    margin: 12px 0 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-form-side {
+    padding: 24px 18px;
+  }
+
+  .chat-header-actions .icon-button {
+    width: 29px;
+  }
+
+  .chat-header {
+    gap: 6px;
+  }
+
+  .message-content-column {
+    max-width: 90%;
+  }
+
+  .message-list {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
