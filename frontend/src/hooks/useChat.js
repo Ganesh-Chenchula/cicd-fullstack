@@ -7,7 +7,7 @@ import {
   sendMessage,
   api,
 } from "../services/api";
-import { createChatSocket } from "../services/websocket";
+import { connectConversation } from "../services/websocket";
 import {
   getConversationId,
   getMessageId,
@@ -130,7 +130,12 @@ export default function useChat(user) {
     const type = event?.type || event?.event;
     const payload = event?.message || event?.data || event;
 
-    if (type === "message" || type === "new_message" || type === "chat.message") {
+    if (
+        type === "message_event" ||
+        type === "message" ||
+        type === "new_message" ||
+        type === "chat.message"
+        ) {
       const incoming = payload?.message || payload;
       if (!incoming || !getMessageId(incoming)) return;
 
@@ -172,24 +177,34 @@ export default function useChat(user) {
     }
 
     if (type === "typing") {
-      const username =
-        event.username ||
-        event.user?.username ||
-        payload?.username;
+        const username =
+            event.username ||
+            event.user?.username ||
+            payload?.username;
 
-      if (!username || username === user?.username) return;
+        if (!username || username === user?.username) return;
 
-      setTypingUsers((current) =>
-        current.includes(username) ? current : [...current, username]
-      );
+        window.clearTimeout(typingTimeoutRef.current);
 
-      window.clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = window.setTimeout(() => {
+        if (event.is_typing === false) {
+            setTypingUsers((current) =>
+            current.filter((name) => name !== username)
+            );
+            return;
+        }
+
         setTypingUsers((current) =>
-          current.filter((name) => name !== username)
+            current.includes(username)
+            ? current
+            : [...current, username]
         );
-      }, 2500);
-    }
+
+        typingTimeoutRef.current = window.setTimeout(() => {
+            setTypingUsers((current) =>
+            current.filter((name) => name !== username)
+            );
+        }, 2500);
+        }
 
     if (type === "read") {
       const ids = event.message_ids || [];
@@ -215,7 +230,10 @@ export default function useChat(user) {
 
     if (type === "presence") {
       const personId = event.user_id;
-      const online = event.is_online ?? event.online;
+      const online =
+        event.is_online ??
+        event.online ??
+        (event.status === "online");
 
       setUsers((current) =>
         current.map((person) =>
@@ -231,7 +249,7 @@ export default function useChat(user) {
     const id = getConversationId(activeConversation);
     if (!id) return undefined;
 
-    const connection = createChatSocket(id, {
+    const connection = connectConversation(id, {
       onEvent: handleSocketEvent,
       onError: () => {
         // REST remains available if the real-time connection fails.
@@ -303,10 +321,11 @@ export default function useChat(user) {
     const id = getMessageId(message);
 
     try {
-      const result = await api(`/chat/messages/${id}/reactions/`, {
-        method: "POST",
-        body: JSON.stringify({ emoji }),
-      });
+      const response = await api.post(
+        `/chat/messages/${id}/reactions/`,
+        { emoji }
+        );
+        const result = response.data;
 
       const updated = result?.message;
       if (updated) {
@@ -331,9 +350,8 @@ export default function useChat(user) {
     const id = getMessageId(message);
 
     try {
-      const result = await api(`/chat/messages/${id}/`, {
-        method: "DELETE",
-      });
+      const response = await api.delete(`/chat/messages/${id}/`);
+      const result = response.data;
 
       setMessages((current) =>
         current.map((item) =>
