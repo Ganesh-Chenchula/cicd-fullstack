@@ -4,6 +4,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.middleware.csrf import get_token
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -31,7 +32,10 @@ User = get_user_model()
 
 @ensure_csrf_cookie
 def csrf_cookie(request):
-    return JsonResponse({"detail": "CSRF cookie set"})
+    return JsonResponse({
+        "detail": "CSRF cookie set",
+        "csrfToken": get_token(request),
+    })
 
 
 # ---------------------------------------------------------

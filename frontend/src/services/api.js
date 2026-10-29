@@ -14,26 +14,17 @@ export const api = axios.create({
   },
 });
 
-function getCookie(name) {
-  const prefix = `${name}=`;
-
-  const cookie = document.cookie
-    .split("; ")
-    .find((item) => item.startsWith(prefix));
-
-  return cookie
-    ? decodeURIComponent(cookie.slice(prefix.length))
-    : null;
-}
+// Keep the CSRF token in memory because the frontend
+// cannot read a host-only cookie belonging to the backend.
+let csrfToken = null;
 
 api.interceptors.request.use((config) => {
   const method = (config.method || "get").toLowerCase();
 
   if (!["get", "head", "options", "trace"].includes(method)) {
-    const csrfToken = getCookie("csrftoken");
+    config.headers = config.headers || {};
 
     if (csrfToken) {
-      config.headers = config.headers || {};
       config.headers["X-CSRFToken"] = csrfToken;
     }
   }
@@ -53,6 +44,15 @@ export const endpoints = {
 
 export async function initializeCsrf() {
   const response = await api.get(endpoints.csrf);
+
+  csrfToken = response.data?.csrfToken || null;
+
+  if (!csrfToken) {
+    throw new Error(
+      "Could not initialize the CSRF token. Check the backend CSRF endpoint."
+    );
+  }
+
   return response.data;
 }
 
@@ -76,6 +76,13 @@ export async function logoutUser() {
   await initializeCsrf();
 
   const response = await api.post(endpoints.logout);
+  return response.data;
+}
+
+export async function registerUser(payload) {
+  await initializeCsrf();
+
+  const response = await api.post(endpoints.register, payload);
   return response.data;
 }
 
