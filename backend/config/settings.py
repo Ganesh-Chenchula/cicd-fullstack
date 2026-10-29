@@ -237,8 +237,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # PRODUCTION SECURITY
 # -------------------------------------------------------------------
 
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
+# Frontend and backend are hosted on different origins.
+SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "None"
+
 
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
