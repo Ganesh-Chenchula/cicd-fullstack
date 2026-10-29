@@ -1,3 +1,4 @@
+
 """
 Django settings for config project.
 Django 5.2.x
@@ -9,7 +10,8 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from backend/.env
+# Load local environment variables for development.
+# Render environment variables take precedence when already set.
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -17,7 +19,7 @@ load_dotenv(BASE_DIR / ".env")
 # SECURITY
 # -------------------------------------------------------------------
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "").strip()
 
 if not SECRET_KEY:
     raise RuntimeError(
@@ -30,10 +32,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     ".onrender.com",
-    "192.168.1.7"
+    "192.168.1.7",
 ]
 
-# Optional comma-separated extra hosts, e.g. ALLOWED_HOSTS=example.com
 extra_hosts = os.environ.get("ALLOWED_HOSTS", "")
 ALLOWED_HOSTS.extend(
     host.strip()
@@ -41,16 +42,15 @@ ALLOWED_HOSTS.extend(
     if host.strip()
 )
 
+
 # -------------------------------------------------------------------
 # APPLICATIONS
 # -------------------------------------------------------------------
 
 INSTALLED_APPS = [
-    # ASGI server and Django Channels
     "daphne",
     "channels",
 
-    # Django built-in applications
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -58,14 +58,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Third-party applications
     "rest_framework",
     "corsheaders",
 
-    # Project applications
     "api",
     "chat",
 ]
+
 
 # -------------------------------------------------------------------
 # MIDDLEWARE
@@ -82,25 +81,32 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 # -------------------------------------------------------------------
 # CORS AND CSRF
 # -------------------------------------------------------------------
 
+FRONTEND_URL = os.environ.get(
+    "FRONTEND_URL",
+    "https://cicd-fullstack-frontend.onrender.com",
+).strip().rstrip("/")
+
 CORS_ALLOWED_ORIGINS = [
+    FRONTEND_URL,
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://192.168.1.7:5173",
-    "https://cicd-fullstack-frontend.onrender.com",
 ]
+
+# Remove duplicates and empty entries.
+CORS_ALLOWED_ORIGINS = list(
+    dict.fromkeys(origin for origin in CORS_ALLOWED_ORIGINS if origin)
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://192.168.1.7:5173",
-    "https://cicd-fullstack-frontend.onrender.com",
-]
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
+
 
 # -------------------------------------------------------------------
 # URL CONFIGURATION
@@ -124,20 +130,23 @@ TEMPLATES = [
     },
 ]
 
-# Traditional WSGI support; ASGI is used for WebSockets.
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
+
 
 # -------------------------------------------------------------------
 # DATABASE
 # -------------------------------------------------------------------
 
+# Retained from your existing configuration for now.
+# Plan persistent storage or PostgreSQL before production use.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 
 # -------------------------------------------------------------------
 # PASSWORD VALIDATION
@@ -176,6 +185,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # -------------------------------------------------------------------
 # DJANGO CHANNELS / REAL-TIME CHAT
 # -------------------------------------------------------------------
@@ -191,14 +201,19 @@ if REDIS_URL:
             },
         },
     }
+elif not DEBUG:
+    raise RuntimeError(
+        "REDIS_URL must be configured when DEBUG=False. "
+        "Configure your Redis service in the environment."
+    )
 else:
-    # Suitable for local development only.
-    # Messages are not shared between separate server processes.
+    # Local development only.
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         },
     }
+
 
 # -------------------------------------------------------------------
 # INTERNATIONALIZATION
@@ -209,12 +224,14 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+
 # -------------------------------------------------------------------
 # STATIC FILES
 # -------------------------------------------------------------------
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 # -------------------------------------------------------------------
 # PRODUCTION SECURITY
@@ -223,12 +240,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 
-
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 
 # -------------------------------------------------------------------
 # DEFAULT PRIMARY KEY
