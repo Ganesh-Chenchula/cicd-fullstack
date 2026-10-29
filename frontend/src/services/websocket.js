@@ -1,22 +1,41 @@
 
 const API_BASE_URL = (
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
-).replace(/\/$/, "");
+  import.meta.env.VITE_API_URL ||
+  "https://novachat-backend-l5jy.onrender.com"
+).replace(/\/+$/, "");
 
 function getWebSocketBase() {
   const url = new URL(API_BASE_URL);
 
-  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  if (url.protocol === "https:") {
+    url.protocol = "wss:";
+  } else if (url.protocol === "http:") {
+    url.protocol = "ws:";
+  } else {
+    throw new Error(`Unsupported API URL protocol: ${url.protocol}`);
+  }
+
   return url.origin;
 }
 
 export function connectConversation(conversationId, handlers = {}) {
+  if (
+    conversationId === undefined ||
+    conversationId === null ||
+    !/^\d+$/.test(String(conversationId)) ||
+    Number(conversationId) <= 0
+  ) {
+    throw new Error("A valid conversation ID is required.");
+  }
+
   const base = getWebSocketBase();
   const socket = new WebSocket(
     `${base}/ws/chat/conversations/${conversationId}/`
   );
 
-  socket.addEventListener("open", () => handlers.onOpen?.());
+  socket.addEventListener("open", () => {
+    handlers.onOpen?.();
+  });
 
   socket.addEventListener("message", (event) => {
     try {
@@ -36,12 +55,16 @@ export function connectConversation(conversationId, handlers = {}) {
 
   return {
     socket,
+
     send(payload) {
-      if (socket.readyState !== WebSocket.OPEN) return false;
+      if (socket.readyState !== WebSocket.OPEN) {
+        return false;
+      }
 
       socket.send(JSON.stringify(payload));
       return true;
     },
+
     close() {
       socket.close();
     },

@@ -1,8 +1,10 @@
 
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://192.168.1.7:8000";
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  "https://novachat-backend-l5jy.onrender.com"
+).replace(/\/+$/, "");
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -83,7 +85,9 @@ export function getErrorMessage(error) {
 
   if (typeof data === "string") {
     if (/<html|<!doctype html/i.test(data)) {
-      return `Server returned HTTP ${status || "error"}. Check the backend URL and Django routes.`;
+      return `Server returned HTTP ${
+        status || "error"
+      }. Check the backend URL and Django routes.`;
     }
 
     return data;
